@@ -19,7 +19,18 @@ app.get('/', function(req,res){
 });
 
 app.get('/todos', function(req,res) {
-    res.json(todos);
+    var queryParams = req.query;
+    var filteredTodos = todos;
+
+    //If has property && completed === true
+    if (queryParams.hasOwnProperty('completed') && queryParams.completed === "true") {
+        filteredTodos = _.where(filteredTodos,{completed: true})
+    } else if (queryParams.hasOwnProperty('completed') && queryParams.completed === "false") {
+        filteredTodos = _.where(filteredTodos,{completed: false})
+    }
+
+
+    res.json(filteredTodos);
 });
 
 app.get('/todos/:id', function(req,res) {
@@ -115,6 +126,8 @@ app.put('/todos/:id', function(req,res) {
     _.extend(matchToDo, valid_attributes);
     res.json(matchToDo);
 });
+
+
 
 
 app.listen(port, function(){
