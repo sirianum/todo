@@ -18,6 +18,7 @@ app.get('/', function(req,res){
     res.send('Todo API Root')
 });
 
+//GET /todos completed=false&q=work
 app.get('/todos', function(req,res) {
     var queryParams = req.query;
     var filteredTodos = todos;
@@ -29,6 +30,15 @@ app.get('/todos', function(req,res) {
         filteredTodos = _.where(filteredTodos,{completed: false})
     }
 
+    if (queryParams.hasOwnProperty('description') && queryParams.description.length > 0 ) {
+        //Look for items with description containing <queryParams.description>
+
+        filteredTodos = _.filter(filteredTodos, function(todo) {
+            return (todo.description.indexOf(queryParams.description) != -1);
+        });
+    }
+
+    console.log(filteredTodos);
 
     res.json(filteredTodos);
 });
