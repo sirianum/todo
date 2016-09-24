@@ -24,8 +24,6 @@ app.get('/todos', function(req,res) {
 
 app.get('/todos/:id', function(req,res) {
 
-
-
     var todoId = parseInt(req.params.id);
     var matchToDo = _.findWhere(todos, {id: todoId});
 
@@ -57,6 +55,24 @@ app.post('/todos', function(req,res) {
         res.json(body);
     }
 });
+
+//DELETE todos:id
+app.delete('/todos/:id', function(req,res) {
+    //_.without (todos, matchedtodo) -- returns new array without the matched todo.
+
+    var todoId = parseInt(req.params.id);
+    var matchToDo = _.findWhere(todos, {id: todoId});
+
+    console.log("matchToDo : " + matchToDo);
+
+    if (matchToDo) {
+        todos = _.without(todos, matchToDo)
+        res.json(matchToDo);
+    } else {
+        //No matching item found to delete.
+        res.status(404).json({"error" : "No todo item found with that id"});
+    }
+})
 
 
 app.listen(port, function(){
