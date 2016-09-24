@@ -74,6 +74,48 @@ app.delete('/todos/:id', function(req,res) {
     }
 })
 
+//UPDATE todos:id
+app.put('/todos/:id', function(req,res) {
+    var todoId = parseInt(req.params.id);
+    var matchToDo = _.findWhere(todos, {id: todoId});
+
+    console.log("matchToDo : " + matchToDo);
+
+    if(!matchToDo) {
+        return res.status(404).send();
+    }
+
+    var body = req.body;
+    body = _.pick(body, 'description', 'completed')
+
+    console.log("body after picking the correct attributes : ");
+    console.log(body);
+
+    valid_attributes = {};
+
+    if (body.hasOwnProperty('completed') && _.isBoolean(body.completed)) {
+        console.log("Adding completed attribute to valid attributes ");
+        valid_attributes.completed = body.completed;
+    }else if(body.hasOwnProperty('completed')) {
+        return res.status(404).json({"error" : "completed attribute doesn't follow standard"});
+    }
+
+    if(body.hasOwnProperty('description') && _.isString(body.description) && body.description.trim().length != 0) {
+        valid_attributes.description = body.description;
+    }else if(body.hasOwnProperty('description')) {
+        //Property provided but didn't meet standard
+        return res.status(404).json({"error" : "description attribute doesn't follow standard"});
+    }
+
+    console.log("valid_attributes : ");
+    console.log(valid_attributes);
+
+    //We have something to update.
+    //Update matchToDo with values from valid_attributes.
+    _.extend(matchToDo, valid_attributes);
+    res.json(matchToDo);
+});
+
 
 app.listen(port, function(){
     console.log("Listening on " + port);
