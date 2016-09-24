@@ -5,6 +5,7 @@
 var express = require('express')
 var app = express();
 var bodyParser = require('body-parser');
+var _ = require('underscore');
 
 var port = process.env.PORT || 3000;
 
@@ -23,16 +24,13 @@ app.get('/todos', function(req,res) {
 
 app.get('/todos/:id', function(req,res) {
 
-    var todoId = req.params.id;
-    var matchToDo = undefined;
 
-    console.log("Looking for id " + todoId);
 
-    for(i = 0; i< todos.length; i++) {
-        if (todos[i] && todos[i].id === parseInt(todoId)) {
-            matchToDo = todos[i];
-        }
-    }
+    var todoId = parseInt(req.params.id);
+    var matchToDo = _.findWhere(todos, {id: todoId});
+
+    console.log("matchToDo : " + matchToDo);
+
     if(matchToDo) {
         res.json(matchToDo)
     } else {
@@ -44,11 +42,18 @@ app.get('/todos/:id', function(req,res) {
 //POST /todos
 app.post('/todos', function(req,res) {
     var body = req.body;
-    if(body) {
+
+    body = _.pick(body, 'description', 'completed')
+
+    if(! _.isBoolean(body.completed) || ! _.isString(body.description) || body.description.trim().length === 0) {
+        res.status(400).send()
+    } else {
+        console.log("Adding to todo array : ");
         body.id = todoNextId;
-        todos[todoNextId] = body;
+        body.description = body.description.trim();
+        console.log(body);
+        todos.push(body);
         todoNextId++;
-        console.log('description');
         res.json(body);
     }
 });
