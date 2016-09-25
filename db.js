@@ -2,19 +2,19 @@
  * Created by smupp00 on 9/24/16.
  */
 
-var Sequilize = require('sequelize');
+var Sequelize = require('sequelize');
 var env = process.env.NODE_ENV || 'development';
 
-var sequilize;
+var sequelize;
 
 if(env === 'production') {
     //Running on heroku
-    sequilize = new Sequelize(process.env.DATABASE_URL, {
+    sequelize = new Sequelize(process.env.DATABASE_URL, {
         dialect: 'postgress'
     })
 
 }else {
-    sequilize = new Sequelize(undefined,
+    sequelize = new Sequelize(undefined,
         undefined,
         undefined,
         {
@@ -25,8 +25,8 @@ if(env === 'production') {
 
 var db = {};
 
-db.todo = sequilize.import(__dirname + "/models/todo.js");
-db.Sequelize = Sequilize;
-db.sequelize = sequilize;
+db.todo = sequelize.import(__dirname + "/models/todo.js");
+db.Sequelize = Sequelize;
+db.sequelize = sequelize;
 
 module.exports = db;
