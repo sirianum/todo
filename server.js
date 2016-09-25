@@ -60,29 +60,6 @@ app.get('/todos', function(req,res) {
             res.status(500).send();
         }
     );
-
-    /*var filteredTodos = todos;
-
-    //If has property && completed === true
-    if (queryParams.hasOwnProperty('completed') && queryParams.completed === "true") {
-        filteredTodos = _.where(filteredTodos,{completed: true})
-    } else if (queryParams.hasOwnProperty('completed') && queryParams.completed === "false") {
-        filteredTodos = _.where(filteredTodos,{completed: false})
-    }
-
-    if (queryParams.hasOwnProperty('description') && queryParams.description.length > 0 ) {
-        //Look for items with description containing <queryParams.description>
-
-        filteredTodos = _.filter(filteredTodos, function(todo) {
-            return (todo.description.indexOf(queryParams.description) != -1);
-        });
-    }
-
-    console.log(filteredTodos);
-
-    res.json(filteredTodos); */
-
-
 });
 
 app.get('/todos/:id', function(req,res) {
@@ -109,18 +86,6 @@ app.post('/todos', function(req,res) {
     var body = req.body;
 
     body = _.pick(body, 'description', 'completed')
-
-    /*if(! _.isBoolean(body.completed) || ! _.isString(body.description) || body.description.trim().length === 0) {
-        res.status(400).send()
-    } else {
-        console.log("Adding to todo array : ");
-        body.id = todoNextId;
-        body.description = body.description.trim();
-        console.log(body);
-        todos.push(body);
-        todoNextId++;
-        res.json(body);
-    }*/
 
     db.todo.create(body).then(function (todo) {
         res.json(todo.toJSON());
