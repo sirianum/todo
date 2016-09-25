@@ -126,43 +126,45 @@ app.delete('/todos/:id', function(req,res) {
 //UPDATE todos:id
 app.put('/todos/:id', function(req,res) {
     var todoId = parseInt(req.params.id);
-    var matchToDo = _.findWhere(todos, {id: todoId});
-
-    console.log("matchToDo : " + matchToDo);
-
-    if(!matchToDo) {
-        return res.status(404).send();
-    }
-
     var body = req.body;
     body = _.pick(body, 'description', 'completed')
 
     console.log("body after picking the correct attributes : ");
     console.log(body);
 
-    valid_attributes = {};
+    var attributes = {};
 
-    if (body.hasOwnProperty('completed') && _.isBoolean(body.completed)) {
+    if (body.hasOwnProperty('completed')) {
         console.log("Adding completed attribute to valid attributes ");
-        valid_attributes.completed = body.completed;
-    }else if(body.hasOwnProperty('completed')) {
-        return res.status(404).json({"error" : "completed attribute doesn't follow standard"});
+        attributes.completed = body.completed;
     }
 
-    if(body.hasOwnProperty('description') && _.isString(body.description) && body.description.trim().length != 0) {
-        valid_attributes.description = body.description;
-    }else if(body.hasOwnProperty('description')) {
-        //Property provided but didn't meet standard
-        return res.status(404).json({"error" : "description attribute doesn't follow standard"});
+    if(body.hasOwnProperty('description')) {
+        attributes.description = body.description;
     }
 
-    console.log("valid_attributes : ");
-    console.log(valid_attributes);
+    console.log("attributes : ");
+    console.log(attributes);
 
-    //We have something to update.
-    //Update matchToDo with values from valid_attributes.
-    _.extend(matchToDo, valid_attributes);
-    res.json(matchToDo);
+    db.todo.findById(todoId).then(
+        function(todo) {
+            if(todo) {
+                todo.update(attributes).then(
+                    function(todo){
+                        res.json(todo.toJSON());
+                    },
+                    function(e) {
+                        res.status(400).json(e);
+                    }
+                );
+            }else {
+                res.status(404).send();
+            }
+        },
+        function(e) {
+            res.status(500).send()
+        }
+    );
 });
 
 
